@@ -150,7 +150,3 @@ To enable AI: Add your `GROQ_API_KEY` to `.env`.
 
 *SplitMint — Split bills, not friendships.* 💚
 
----
-
-- The `settings.py` already handles this automatically
-
