@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Delete Expense — SplitMint{% endblock %}
+{% block content %}
+<div class="container-xl py-4" style="max-width:520px">
+  <div class="sm-card text-center p-5">
+    <div class="sm-delete-icon mb-3"><i class="bi bi-receipt-cutoff"></i></div>
+    <h4>Delete "{{ expense.title }}"?</h4>
+    <p class="text-muted">This will remove the expense and all its splits. This cannot be undone.</p>
+    <form method="post" class="d-flex gap-3 justify-content-center mt-4">
+      {% csrf_token %}
+      <button type="submit" class="btn sm-btn-danger px-4">
+        <i class="bi bi-trash me-1"></i>Delete
+      </button>
+      <a href="{% url 'group_detail' expense.group.pk %}" class="btn sm-btn-ghost px-4">Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

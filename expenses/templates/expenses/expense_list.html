@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}Expenses — {{ group.name }}{% endblock %}
+{% block content %}
+<div class="container-xl py-4">
+  <div class="mb-4">
+    <a href="{% url 'group_detail' group.pk %}" class="sm-back-link">
+      <i class="bi bi-arrow-left me-1"></i>{{ group.name }}
+    </a>
+    <h2 class="sm-page-title mt-2 mb-0">All Expenses</h2>
+  </div>
+
+  <!-- Filters -->
+  <div class="sm-card mb-4">
+    <div class="sm-card-body">
+      <form method="get" class="row g-2 align-items-end">
+        <div class="col-md-4">
+          {{ filter_form.q.label_tag }}
+          {{ filter_form.q }}
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Category</label>
+          {{ filter_form.category }}
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Split Type</label>
+          {{ filter_form.split_type }}
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">From</label>
+          {{ filter_form.date_from }}
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">To</label>
+          {{ filter_form.date_to }}
+        </div>
+        <div class="col-12 d-flex gap-2">
+          <button type="submit" class="btn sm-btn-primary btn-sm">
+            <i class="bi bi-funnel me-1"></i>Filter
+          </button>
+          <a href="{% url 'expense_list' group.pk %}" class="btn sm-btn-ghost btn-sm">Clear</a>
+          <a href="{% url 'add_expense' group.pk %}" class="btn sm-btn-primary btn-sm ms-auto">
+            <i class="bi bi-plus-lg me-1"></i>Add Expense
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  {% if expenses %}
+    <div class="sm-card">
+      <div class="sm-card-body p-0">
+        {% for expense in expenses %}
+        <div class="sm-expense-row">
+          <div class="sm-er-icon cat-{{ expense.category }}">
+            {% if expense.category == 'food' %}<i class="bi bi-egg-fried"></i>
+            {% elif expense.category == 'transport' %}<i class="bi bi-car-front-fill"></i>
+            {% elif expense.category == 'accommodation' %}<i class="bi bi-house-fill"></i>
+            {% elif expense.category == 'entertainment' %}<i class="bi bi-film"></i>
+            {% elif expense.category == 'shopping' %}<i class="bi bi-bag-fill"></i>
+            {% elif expense.category == 'utilities' %}<i class="bi bi-lightning-fill"></i>
+            {% else %}<i class="bi bi-receipt"></i>{% endif %}
+          </div>
+          <div class="flex-grow-1">
+            <div class="sm-er-title">{{ expense.title }}</div>
+            <div class="sm-er-meta">
+              {{ expense.date }} &bull; paid by {{ expense.paid_by.first_name|default:expense.paid_by.username }}
+              &bull; <span class="badge sm-badge-split-{{ expense.split_type }}">{{ expense.get_split_type_display }}</span>
+            </div>
+          </div>
+          <div class="text-end ms-3">
+            <div class="sm-er-amount">₹{{ expense.amount }}</div>
+            <div class="d-flex gap-1 mt-1 justify-content-end">
+              <a href="{% url 'edit_expense' expense.pk %}" class="btn sm-icon-btn" title="Edit">
+                <i class="bi bi-pencil-fill"></i>
+              </a>
+              <a href="{% url 'delete_expense' expense.pk %}" class="btn sm-icon-btn danger" title="Delete">
+                <i class="bi bi-trash-fill"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% else %}
+    <div class="sm-empty-page">
+      <i class="bi bi-receipt-cutoff"></i>
+      <h4>No expenses match your filters</h4>
+      <a href="{% url 'expense_list' group.pk %}" class="btn sm-btn-ghost mt-2">Clear Filters</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block title %}SplitMint — Split Bills Smartly{% endblock %}
+{% block content %}
+<div class="sm-hero">
+  <div class="container-xl">
+    <div class="row align-items-center min-vh-80 py-5">
+      <div class="col-lg-6">
+        <div class="sm-hero-badge mb-3">
+          <i class="bi bi-stars me-1"></i> Powered by AI MintSense
+        </div>
+        <h1 class="sm-hero-title">Split Bills.<br>Not Friendships.</h1>
+        <p class="sm-hero-sub">
+          SplitMint makes it effortless to track shared expenses, calculate fair splits,
+          and settle up — all in one place. Add expenses in plain English with AI.
+        </p>
+        <div class="d-flex gap-3 flex-wrap mt-4">
+          {% if user.is_authenticated %}
+            <a href="{% url 'dashboard' %}" class="btn sm-btn-primary btn-lg px-4">
+              <i class="bi bi-grid-1x2-fill me-2"></i>Go to Dashboard
+            </a>
+          {% else %}
+            <a href="{% url 'register' %}" class="btn sm-btn-primary btn-lg px-4">
+              <i class="bi bi-rocket-takeoff me-2"></i>Get Started Free
+            </a>
+            <a href="{% url 'login' %}" class="btn sm-btn-ghost btn-lg px-4">Sign In</a>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-lg-6 d-none d-lg-flex justify-content-center">
+        <div class="sm-hero-card-stack">
+          <div class="sm-hero-card card-a">
+            <div class="sm-hc-icon bg-success"><i class="bi bi-receipt"></i></div>
+            <div>
+              <div class="sm-hc-label">Goa Trip Dinner</div>
+              <div class="sm-hc-amt">₹2,400</div>
+            </div>
+            <span class="badge sm-badge-equal ms-auto">Equal</span>
+          </div>
+          <div class="sm-hero-card card-b">
+            <div class="sm-hc-icon bg-warning"><i class="bi bi-car-front-fill"></i></div>
+            <div>
+              <div class="sm-hc-label">Cab to Airport</div>
+              <div class="sm-hc-amt">₹850</div>
+            </div>
+            <span class="badge sm-badge-custom ms-auto">Custom</span>
+          </div>
+          <div class="sm-hero-card card-c">
+            <div class="sm-hc-icon bg-info"><i class="bi bi-house-fill"></i></div>
+            <div>
+              <div class="sm-hc-label">Airbnb Stay</div>
+              <div class="sm-hc-amt">₹6,200</div>
+            </div>
+            <span class="badge sm-badge-pct ms-auto">%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sm-features-section py-5">
+  <div class="container-xl">
+    <div class="row g-4">
+      {% for icon, title, desc in features %}
+      <div class="col-md-4">
+        <div class="sm-feature-card h-100">
+          <div class="sm-fc-icon"><i class="bi bi-{{ icon }}"></i></div>
+          <h5 class="sm-fc-title">{{ title }}</h5>
+          <p class="sm-fc-desc">{{ desc }}</p>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-md-4">
+        <div class="sm-feature-card h-100">
+          <div class="sm-fc-icon"><i class="bi bi-lightning-charge-fill"></i></div>
+          <h5 class="sm-fc-title">Smart Splits</h5>
+          <p class="sm-fc-desc">Equal, custom or percentage splits — choose what works for your group.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="sm-feature-card h-100">
+          <div class="sm-fc-icon"><i class="bi bi-stars"></i></div>
+          <h5 class="sm-fc-title">AI MintSense</h5>
+          <p class="sm-fc-desc">Just type "Paid ₹500 for pizza with 4 friends" and let AI parse it instantly.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="sm-feature-card h-100">
+          <div class="sm-fc-icon"><i class="bi bi-arrow-left-right"></i></div>
+          <h5 class="sm-fc-title">Smart Settlements</h5>
+          <p class="sm-fc-desc">Minimize transactions with our greedy settlement algorithm.</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

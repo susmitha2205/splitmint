@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Dashboard — SplitMint{% endblock %}
+
+{% block content %}
+<div class="container-xl py-4">
+
+  <!-- Header -->
+  <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+    <div>
+      <h2 class="sm-page-title mb-0">Welcome back, {{ request.user.first_name|default:request.user.username }} 👋</h2>
+      <p class="text-muted mb-0">Here's your financial snapshot</p>
+    </div>
+    <a href="{% url 'create_group' %}" class="btn sm-btn-primary">
+      <i class="bi bi-plus-lg me-1"></i> New Group
+    </a>
+  </div>
+
+  <!-- Balance Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-3">
+      <div class="sm-stat-card green">
+        <div class="sm-stat-label">You are Owed</div>
+        <div class="sm-stat-value">₹{{ total_owed|floatformat:2 }}</div>
+        <div class="sm-stat-sub"><i class="bi bi-arrow-down-circle-fill me-1"></i>Incoming</div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="sm-stat-card red">
+        <div class="sm-stat-label">You Owe</div>
+        <div class="sm-stat-value">₹{{ total_owing|floatformat:2 }}</div>
+        <div class="sm-stat-sub"><i class="bi bi-arrow-up-circle-fill me-1"></i>Outgoing</div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="sm-stat-card {% if net_balance >= 0 %}blue{% else %}orange{% endif %}">
+        <div class="sm-stat-label">Net Balance</div>
+        <div class="sm-stat-value">₹{{ net_balance|floatformat:2 }}</div>
+        <div class="sm-stat-sub">
+          {% if net_balance >= 0 %}<i class="bi bi-emoji-smile-fill me-1"></i>You're good!
+          {% else %}<i class="bi bi-emoji-frown-fill me-1"></i>Settle up{% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="sm-stat-card purple">
+        <div class="sm-stat-label">Groups</div>
+        <div class="sm-stat-value">{{ group_count }}</div>
+        <div class="sm-stat-sub"><i class="bi bi-people-fill me-1"></i>Active groups</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Recent Expenses -->
+    <div class="col-lg-7">
+      <div class="sm-card">
+        <div class="sm-card-header d-flex align-items-center justify-content-between">
+          <span><i class="bi bi-clock-history me-2"></i>Recent Expenses</span>
+          <a href="{% url 'group_list' %}" class="sm-link-sm">View all</a>
+        </div>
+        <div class="sm-card-body p-0">
+          {% if recent_expenses %}
+            {% for expense in recent_expenses %}
+            <div class="sm-expense-row">
+              <div class="sm-er-icon cat-{{ expense.category }}">
+                {% if expense.category == 'food' %}<i class="bi bi-egg-fried"></i>
+                {% elif expense.category == 'transport' %}<i class="bi bi-car-front-fill"></i>
+                {% elif expense.category == 'accommodation' %}<i class="bi bi-house-fill"></i>
+                {% elif expense.category == 'entertainment' %}<i class="bi bi-film"></i>
+                {% elif expense.category == 'shopping' %}<i class="bi bi-bag-fill"></i>
+                {% elif expense.category == 'utilities' %}<i class="bi bi-lightning-fill"></i>
+                {% elif expense.category == 'medical' %}<i class="bi bi-heart-pulse-fill"></i>
+                {% else %}<i class="bi bi-receipt"></i>{% endif %}
+              </div>
+              <div class="flex-grow-1">
+                <div class="sm-er-title">{{ expense.title }}</div>
+                <div class="sm-er-meta">{{ expense.group.name }} &bull; {{ expense.date }}</div>
+              </div>
+              <div class="text-end">
+                <div class="sm-er-amount">₹{{ expense.amount }}</div>
+                <div class="sm-er-paid">paid by {{ expense.paid_by.first_name|default:expense.paid_by.username }}</div>
+              </div>
+            </div>
+            {% endfor %}
+          {% else %}
+            <div class="sm-empty-state py-5">
+              <i class="bi bi-receipt-cutoff"></i>
+              <p>No expenses yet. Create a group and add your first expense!</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Groups -->
+    <div class="col-lg-5">
+      <div class="sm-card">
+        <div class="sm-card-header d-flex align-items-center justify-content-between">
+          <span><i class="bi bi-people-fill me-2"></i>Your Groups</span>
+          <a href="{% url 'create_group' %}" class="sm-link-sm"><i class="bi bi-plus-lg"></i> New</a>
+        </div>
+        <div class="sm-card-body p-0">
+          {% if groups %}
+            {% for group in groups %}
+            <a href="{% url 'group_detail' group.pk %}" class="sm-group-row text-decoration-none">
+              <div class="sm-gr-avatar cat-{{ group.category }}">
+                {% if group.category == 'trip' %}<i class="bi bi-airplane-fill"></i>
+                {% elif group.category == 'home' %}<i class="bi bi-house-fill"></i>
+                {% elif group.category == 'food' %}<i class="bi bi-egg-fried"></i>
+                {% elif group.category == 'entertainment' %}<i class="bi bi-film"></i>
+                {% elif group.category == 'work' %}<i class="bi bi-briefcase-fill"></i>
+                {% else %}<i class="bi bi-people-fill"></i>{% endif %}
+              </div>
+              <div class="flex-grow-1">
+                <div class="sm-gr-name">{{ group.name }}</div>
+                <div class="sm-gr-meta">{{ group.get_member_count }} members &bull; {{ group.get_expense_count }} expenses</div>
+              </div>
+              <div class="sm-gr-total">₹{{ group.get_total_expenses|floatformat:0 }}</div>
+            </a>
+            {% endfor %}
+          {% else %}
+            <div class="sm-empty-state py-4">
+              <i class="bi bi-people"></i>
+              <p>No groups yet. <a href="{% url 'create_group' %}">Create one!</a></p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- MintSense AI CTA -->
+      <div class="sm-ai-cta mt-3">
+        <div class="sm-ai-cta-glow"></div>
+        <div class="position-relative">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="sm-ai-badge"><i class="bi bi-stars"></i> AI</span>
+            <strong>MintSense</strong>
+          </div>
+          <p class="mb-2 small">Type expenses in plain English — AI parses them instantly.</p>
+          <a href="{% url 'parse_expense' %}" class="btn sm-btn-ai btn-sm w-100">
+            Try MintSense AI <i class="bi bi-arrow-right ms-1"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

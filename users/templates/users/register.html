@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}Register — SplitMint{% endblock %}
+{% block content %}
+<div class="sm-auth-wrapper">
+  <div class="sm-auth-card">
+    <div class="sm-auth-logo">
+      <span class="sm-brand-icon lg"><i class="bi bi-lightning-charge-fill"></i></span>
+      <h2 class="mt-3 mb-1">Create your account</h2>
+      <p class="text-muted">Join SplitMint — it's free forever</p>
+    </div>
+
+    <form method="post" autocomplete="off">
+      {% csrf_token %}
+      <div class="row g-3">
+        <div class="col-6">
+          <label class="form-label fw-500">First Name</label>
+          {{ form.first_name }}
+          {% if form.first_name.errors %}<div class="sm-field-error">{{ form.first_name.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="col-6">
+          <label class="form-label fw-500">Last Name</label>
+          {{ form.last_name }}
+          {% if form.last_name.errors %}<div class="sm-field-error">{{ form.last_name.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="col-12">
+          <label class="form-label fw-500">Username</label>
+          {{ form.username }}
+          {% if form.username.errors %}<div class="sm-field-error">{{ form.username.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="col-12">
+          <label class="form-label fw-500">Email</label>
+          {{ form.email }}
+          {% if form.email.errors %}<div class="sm-field-error">{{ form.email.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="col-12">
+          <label class="form-label fw-500">Password</label>
+          {{ form.password1 }}
+          {% if form.password1.errors %}<div class="sm-field-error">{{ form.password1.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="col-12">
+          <label class="form-label fw-500">Confirm Password</label>
+          {{ form.password2 }}
+          {% if form.password2.errors %}<div class="sm-field-error">{{ form.password2.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+
+      {% if form.non_field_errors %}
+        <div class="alert sm-alert-danger mt-3">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ form.non_field_errors.0 }}
+        </div>
+      {% endif %}
+
+      <button type="submit" class="btn sm-btn-primary w-100 btn-lg mt-4">
+        <i class="bi bi-rocket-takeoff me-2"></i>Create Account
+      </button>
+    </form>
+
+    <div class="sm-auth-footer">
+      Already have an account? <a href="{% url 'login' %}">Sign in</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

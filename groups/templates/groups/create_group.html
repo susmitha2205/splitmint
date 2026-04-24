@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} — SplitMint{% endblock %}
+{% block content %}
+<div class="container-xl py-4" style="max-width:720px">
+  <div class="mb-4">
+    <a href="{% url 'group_list' %}" class="sm-back-link">
+      <i class="bi bi-arrow-left me-1"></i> Back to Groups
+    </a>
+    <h2 class="sm-page-title mt-2 mb-0">{{ title }}</h2>
+  </div>
+
+  <div class="sm-card">
+    <div class="sm-card-body">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label fw-500">Group Name <span class="text-danger">*</span></label>
+            {{ form.name }}
+            {% if form.name.errors %}<div class="sm-field-error">{{ form.name.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-500">Category</label>
+            {{ form.category }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-500">Group Image</label>
+            {{ form.image }}
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-500">Description</label>
+            {{ form.description }}
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-500">Add Members</label>
+            <div class="sm-member-list">
+              {% for checkbox in form.members %}
+                <label class="sm-member-item">
+                  {{ checkbox.tag }}
+                  <span class="sm-member-name">{{ checkbox.choice_label }}</span>
+                </label>
+              {% endfor %}
+            </div>
+            {% if form.members.errors %}<div class="sm-field-error">{{ form.members.errors.0 }}</div>{% endif %}
+            <small class="text-muted">You will be added automatically as a member.</small>
+          </div>
+        </div>
+        <div class="d-flex gap-2 mt-4">
+          <button type="submit" class="btn sm-btn-primary px-4">
+            <i class="bi bi-check2 me-1"></i> {{ title }}
+          </button>
+          <a href="{% url 'group_list' %}" class="btn sm-btn-ghost px-4">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

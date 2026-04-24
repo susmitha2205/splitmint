@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% block title %}MintSense AI — SplitMint{% endblock %}
+{% block content %}
+<div class="container-xl py-4" style="max-width:760px">
+  <div class="mb-4">
+    <h2 class="sm-page-title mb-0">
+      <span class="sm-ai-badge me-2"><i class="bi bi-stars"></i> AI</span>
+      MintSense
+    </h2>
+    <p class="text-muted">Describe your expense in plain English — AI parses it instantly.</p>
+  </div>
+
+  <!-- Input card -->
+  <div class="sm-card mb-4">
+    <div class="sm-card-body">
+      <form method="post">
+        {% csrf_token %}
+        <label class="form-label fw-500 mb-2">Describe your expense</label>
+        <div class="input-group mb-3">
+          <textarea name="user_input" class="form-control" rows="3"
+            placeholder='e.g. "Paid 1200 for dinner at Pizza Hut with 4 friends last night"&#10;"Spent 850 on Uber to airport"&#10;"Hotel stay 3 nights 6000 total"'>{{ user_input }}</textarea>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn sm-btn-ai">
+            <i class="bi bi-magic me-2"></i>Parse with MintSense
+          </button>
+          <button type="button" class="btn sm-btn-ghost" onclick="fillExample()">
+            Try an example
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Result -->
+  {% if parsed %}
+  <div class="sm-card sm-ai-result-card mb-4">
+    <div class="sm-card-header">
+      <span class="sm-ai-badge me-2"><i class="bi bi-stars"></i> Parsed Result</span>
+      {% if parsed.fallback %}
+        <span class="badge bg-warning text-dark ms-1">Rule-based fallback</span>
+      {% else %}
+        <span class="badge bg-success ms-1">AI parsed</span>
+      {% endif %}
+    </div>
+    <div class="sm-card-body">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="sm-result-field">
+            <div class="sm-rf-label"><i class="bi bi-type me-1"></i>Title</div>
+            <div class="sm-rf-value">{{ parsed.title }}</div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="sm-result-field">
+            <div class="sm-rf-label"><i class="bi bi-currency-rupee me-1"></i>Amount</div>
+            <div class="sm-rf-value">₹{{ parsed.amount }}</div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="sm-result-field">
+            <div class="sm-rf-label"><i class="bi bi-tag-fill me-1"></i>Category</div>
+            <div class="sm-rf-value">
+              <span class="badge sm-badge-category-{{ parsed.category }}">{{ parsed.category|title }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="sm-result-field">
+            <div class="sm-rf-label"><i class="bi bi-chat-left-text me-1"></i>Note</div>
+            <div class="sm-rf-value text-muted">{{ parsed.note|default:"—" }}</div>
+          </div>
+        </div>
+      </div>
+
+      {% if groups %}
+      <hr class="my-3">
+      <div class="d-flex align-items-center gap-3 flex-wrap">
+        <span class="fw-500">Add to group:</span>
+        {% for group in groups %}
+        <a href="{% url 'add_expense' group.pk %}?title={{ parsed.title|urlencode }}&amount={{ parsed.amount }}&category={{ parsed.category }}"
+           class="btn sm-btn-primary btn-sm">
+          <i class="bi bi-plus-lg me-1"></i>{{ group.name }}
+        </a>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Examples -->
+  <div class="sm-card">
+    <div class="sm-card-header"><i class="bi bi-lightbulb-fill me-2"></i>Example phrases to try</div>
+    <div class="sm-card-body">
+      <div class="sm-example-list">
+        {% for ex in examples %}
+        <div class="sm-example-chip" onclick="fillInput('{{ ex }}')">{{ ex }}</div>
+        {% empty %}
+        <div class="sm-example-chip" onclick="fillInput(this.textContent)">Paid 1200 for dinner at Pizza Hut with 4 friends</div>
+        <div class="sm-example-chip" onclick="fillInput(this.textContent)">Spent 850 on Uber to the airport yesterday</div>
+        <div class="sm-example-chip" onclick="fillInput(this.textContent)">Hotel stay for 3 nights, total 6000 rupees</div>
+        <div class="sm-example-chip" onclick="fillInput(this.textContent)">Grocery shopping at DMart, 2400 split 3 ways</div>
+        <div class="sm-example-chip" onclick="fillInput(this.textContent)">Movie tickets for 5 people, 600 total</div>
+        <div class="sm-example-chip" onclick="fillInput(this.textContent)">Electricity bill 1800 for this month</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function fillInput(text) {
+  document.querySelector('[name="user_input"]').value = text;
+}
+function fillExample() {
+  const examples = [
+    'Paid 1200 for dinner at Pizza Hut with 4 friends',
+    'Spent 850 on Uber to the airport yesterday',
+    'Hotel stay for 3 nights, total 6000 rupees',
+    'Grocery shopping 2400 split equally',
+  ];
+  fillInput(examples[Math.floor(Math.random() * examples.length)]);
+}
+</script>
+{% endblock %}
