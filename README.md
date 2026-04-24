@@ -54,7 +54,7 @@ ALLOWED_HOSTS=localhost,127.0.0.1
 GROQ_API_KEY=your-groq-api-key-here   # Optional — for AI MintSense
 ```
 
-> **Note:** The app works fully without an Anthropic API key. MintSense will use a smart rule-based fallback parser.
+> **Note:** The app works fully without an API key. MintSense will use a smart rule-based fallback parser.
 
 ---
 
